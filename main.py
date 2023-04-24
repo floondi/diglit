@@ -112,6 +112,7 @@ def solve (path_list: list[tuple[int, str]]):
     return
 
 if __name__ == "__main__":
+    solve()
 
 
 #start = [5,7,9,11,13,23]
