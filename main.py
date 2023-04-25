@@ -1,17 +1,18 @@
+import time
+import argparse 
 from itertools import combinations
 from collections import defaultdict, Counter
 
-# TODO CLI input args
-# TODO complete mode
 # TODO measure efficiency & improve
 # TODO use hash table to improve
-start = [3,5,9,19,20,25] 
-targ = 462 #25139 tries 
-greedy = False
+# TODO error for invalid CLI args
+
 max_print = 600
 answer = 'No solution available'
+VERBOSE = False
 TRY_COUNT = 0
 ALL_COMBOS = defaultdict(list)
+
 
 def conv(int_list: list[int]):
     return [(i, str(i)) for i in int_list]
@@ -23,23 +24,28 @@ def check(n, p):
     global answer
     ALL_COMBOS[n].append(p) 
     TRY_COUNT = TRY_COUNT+1
-    if n == targ:
+    if n == TARGET:
         answer = p
-        if greedy:
+        if GREEDY:
             summary()
 
             
 def summary(max = max_print):
-    global ALL_COMBOS
-    #print(ALL_COMBOS)
-    all = {k:len(v) for k,v in ALL_COMBOS.items()}
-    path_counts = sorted(all.items(), key=lambda x:x[0])
-    for int, n in path_counts:
-        if int>max:
-            break
-        print(f'{int:5}{n:6}')
-    print(f'Solution for {targ} is {answer} found after {TRY_COUNT} tries')
+
+    elapsed_time = time.process_time() - TIME_ZERO
+
+    if VERBOSE:
+        global ALL_COMBOS
+        all = {k:len(v) for k,v in ALL_COMBOS.items()}
+        path_counts = sorted(all.items(), key=lambda x:x[0])
+        for int, n in path_counts:
+            if int>max:
+                break
+            print(f'{int:5}{n:6}')
+
+    print(f'Solution for {TARGET} is {answer} found after {TRY_COUNT} tries and {elapsed_time:.4f} seconds')
     quit()
+
 
 def explore (old, new):
     results = []
@@ -111,43 +117,37 @@ def solve (path_list: list[tuple[int, str]]):
         solve(result_path_list)
     return
 
+
 if __name__ == "__main__":
-    solve()
+    TIME_ZERO = time.process_time()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--target', '-t', type=int, default=None, help="The target integer")
+    parser.add_argument('--operands', '-o', nargs='+', type=int, help='The set of numbers which may be used to solve the puzzle')
+    parser.add_argument('--greedy', '-g', action="store_true", help='If selected, terminates on the first valid solution. Otherwise, all combinations are explored.')
+    args = parser.parse_args()
+    operands = args.operands 
+    TARGET = args.target
+    GREEDY = args.greedy
+    initial = conv(operands)
+    solve(initial)
+    summary()
 
 
 #start = [5,7,9,11,13,23]
 #targ = 463
 
-pl = conv(start)
-
-solve (pl)
-summary()
-
-
-#explore(old = (6, '6'), new = (24, '24'))
-
-
-quit()
-
+# start = [3,5,9,19,20,25] 
+# targ = 462 #25139 tries 
 
 #class pedigree_number
 
-class PedigreeInt:
-    def __init__(self, value: int):
-        self.value = value
-        self.pedigree = str(value)
+# class PedigreeInt:
+#     def __init__(self, value: int):
+#         self.value = value
+#         self.pedigree = str(value)
 
-start_set = [3,13,19,20,23,25]
+# start_set = [3,13,19,20,23,25]
 # [4,5,7,9,11,20] 218
-# [3,5,9,20,23,25] 388
+# [3,5,9,20,23,25] 388 #1178064 tries 
 #    #[3,5,9,19,20,25] 462
 #   [5,7,9,11,13,23] 463
-
-
-add_combo = []
-
-mult_combo = []
-
-
-
-print('foo')
